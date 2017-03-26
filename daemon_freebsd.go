@@ -5,18 +5,17 @@ package daemon
 import "C"
 
 import (
-	"unsafe"
-	"fmt"
 	"bytes"
-	"path/filepath"
+	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"regexp"
 	"strings"
 	"text/template"
-	"io/ioutil"
+	"unsafe"
 )
-
 
 // systemVRecord - standard record (struct) for linux systemV version of daemon package
 type bsdRecord struct {
@@ -52,18 +51,17 @@ func (bsd *bsdRecord) isEnabled() (bool, error) {
 	r, _ := regexp.Compile(`.*` + bsd.name + `_enable="YES".*`)
 	v := string(r.Find(rcData))
 	var chrFound, sharpFound bool
-	for _, c := range(v){
-		if c == '#' && !chrFound{
+	for _, c := range v {
+		if c == '#' && !chrFound {
 			sharpFound = true
 			break
-		}else if !sharpFound && c != ' '{
+		} else if !sharpFound && c != ' ' {
 			chrFound = true
 			break
 		}
 	}
 	return chrFound, nil
 }
-
 
 func (bsd *bsdRecord) getCmd(cmd string) string {
 	if ok, err := bsd.isEnabled(); !ok || err != nil {
@@ -72,7 +70,6 @@ func (bsd *bsdRecord) getCmd(cmd string) string {
 	}
 	return cmd
 }
-
 
 // Get the daemon properly
 func newDaemon(name, description string, dependencies []string) (Daemon, error) {
@@ -110,7 +107,6 @@ func execPath() (string, error) {
 
 	return filepath.Clean(exePathString), nil
 }
-
 
 // Check service is running
 func (bsd *bsdRecord) checkRunning() (string, bool) {
@@ -194,7 +190,6 @@ func (bsd *bsdRecord) Remove() (string, error) {
 	return removeAction + success, nil
 }
 
-
 // Start the service
 func (bsd *bsdRecord) Start() (string, error) {
 	startAction := "Starting " + bsd.description + ":"
@@ -241,6 +236,24 @@ func (bsd *bsdRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
+func (bsd *bsdRecord) Restart() (string, error) {
+	restartAction := "Restarting " + bsd.description + ":"
+
+	if ok, err := checkPrivileges(); !ok {
+		return restartAction + failed, err
+	}
+
+	if !bsd.isInstalled() {
+		return restartAction + failed, ErrNotInstalled
+	}
+
+	if err := exec.Command("service", bsd.name, bsd.getCmd("restart")).Run(); err != nil {
+		return restartAction + failed, err
+	}
+
+	return restartAction + success, nil
+}
+
 // Status - Get service status
 func (bsd *bsdRecord) Status() (string, error) {
 
@@ -280,4 +293,3 @@ start_cmd="/usr/sbin/daemon -p $pidfile -f $command {{.Args}}"
 load_rc_config $name
 run_rc_command "$1"
 `
-

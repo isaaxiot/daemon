@@ -192,6 +192,24 @@ func (linux *systemDRecord) Status() (string, error) {
 	return statusAction, nil
 }
 
+func (linux *systemDRecord) Restart() (string, error) {
+	restartAction := "Restarting " + linux.description + ":"
+
+	if ok, err := checkPrivileges(); !ok {
+		return restartAction + failed, err
+	}
+
+	if !linux.isInstalled() {
+		return restartAction + failed, ErrNotInstalled
+	}
+
+	if err := exec.Command("systemctl", "restart", linux.name+".service").Run(); err != nil {
+		return restartAction + failed, err
+	}
+
+	return restartAction + success, nil
+}
+
 var systemDConfig = `[Unit]
 Description={{.Description}}
 Requires={{.Dependencies}}

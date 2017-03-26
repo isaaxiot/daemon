@@ -184,6 +184,24 @@ func (linux *systemVRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
+func (linux *systemVRecord) Restart() (string, error) {
+	restartAction := "Restarting " + linux.description + ":"
+
+	if ok, err := checkPrivileges(); !ok {
+		return restartAction + failed, err
+	}
+
+	if !linux.isInstalled() {
+		return restartAction + failed, ErrNotInstalled
+	}
+
+	if err := exec.Command("service", linux.name, "restart").Run(); err != nil {
+		return restartAction + failed, err
+	}
+
+	return restartAction + success, nil
+}
+
 // Status - Get service status
 func (linux *systemVRecord) Status() (string, error) {
 

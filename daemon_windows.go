@@ -88,6 +88,10 @@ func (windows *windowsRecord) Stop() (string, error) {
 	return stopAction + " completed.", nil
 }
 
+func (windows *windowsRecord) Restart() (string, error) {
+	return "Not implemented", errors.New("Not implemented")
+}
+
 // Status - Get service status
 func (windows *windowsRecord) Status() (string, error) {
 	cmd := exec.Command("nssm.exe", "status", windows.name)

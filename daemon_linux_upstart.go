@@ -162,6 +162,24 @@ func (linux *upstartRecord) Stop() (string, error) {
 	return stopAction + success, nil
 }
 
+func (linux *upstartRecord) Restart() (string, error) {
+	restartAction := "Restarting " + linux.description + ":"
+
+	if ok, err := checkPrivileges(); !ok {
+		return restartAction + failed, err
+	}
+
+	if !linux.isInstalled() {
+		return restartAction + failed, ErrNotInstalled
+	}
+
+	if err := exec.Command("restart", linux.name).Run(); err != nil {
+		return restartAction + failed, err
+	}
+
+	return restartAction + success, nil
+}
+
 // Status - Get service status
 func (linux *upstartRecord) Status() (string, error) {
 

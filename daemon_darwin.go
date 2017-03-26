@@ -6,6 +6,7 @@
 package daemon
 
 import (
+	"errors"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -168,6 +169,10 @@ func (darwin *darwinRecord) Stop() (string, error) {
 	}
 
 	return stopAction + success, nil
+}
+
+func (darwin *darwinRecord) Restart() (string, error) {
+	return "Not implemented", errors.New("Not implemented")
 }
 
 // Status - Get service status
