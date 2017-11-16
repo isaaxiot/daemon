@@ -28,6 +28,10 @@ func newDaemon(name, description string, dependencies []string) (Daemon, error) 
 	return &windowsRecord{name, description, dependencies}, nil
 }
 
+func (windows *windowsRecord) IsInstalled() bool {
+	return false
+}
+
 // Install the service
 func (windows *windowsRecord) Install(args ...string) (string, error) {
 	installAction := "Install " + windows.description + ":"

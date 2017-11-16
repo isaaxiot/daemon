@@ -30,7 +30,7 @@ func (bsd *bsdRecord) servicePath() string {
 }
 
 // Is a service installed
-func (bsd *bsdRecord) isInstalled() bool {
+func (bsd *bsdRecord) IsInstalled() bool {
 
 	if _, err := os.Stat(bsd.servicePath()); err == nil {
 		return true

@@ -25,7 +25,7 @@ func (linux *upstartRecord) servicePath() string {
 }
 
 // Is a service installed
-func (linux *upstartRecord) isInstalled() bool {
+func (linux *upstartRecord) IsInstalled() bool {
 
 	if _, err := os.Stat(linux.servicePath()); err == nil {
 		return true
@@ -61,7 +61,7 @@ func (linux *upstartRecord) Install(args ...string) (string, error) {
 
 	srvPath := linux.servicePath()
 
-	if linux.isInstalled() {
+	if linux.IsInstalled() {
 		return installAction + failed, ErrAlreadyInstalled
 	}
 
@@ -105,7 +105,7 @@ func (linux *upstartRecord) Remove() (string, error) {
 		return removeAction + failed, err
 	}
 
-	if !linux.isInstalled() {
+	if !linux.IsInstalled() {
 		return removeAction + failed, ErrNotInstalled
 	}
 
@@ -124,7 +124,7 @@ func (linux *upstartRecord) Start() (string, error) {
 		return startAction + failed, err
 	}
 
-	if !linux.isInstalled() {
+	if !linux.IsInstalled() {
 		return startAction + failed, ErrNotInstalled
 	}
 
@@ -147,7 +147,7 @@ func (linux *upstartRecord) Stop() (string, error) {
 		return stopAction + failed, err
 	}
 
-	if !linux.isInstalled() {
+	if !linux.IsInstalled() {
 		return stopAction + failed, ErrNotInstalled
 	}
 
@@ -169,7 +169,7 @@ func (linux *upstartRecord) Restart() (string, error) {
 		return restartAction + failed, err
 	}
 
-	if !linux.isInstalled() {
+	if !linux.IsInstalled() {
 		return restartAction + failed, ErrNotInstalled
 	}
 
@@ -187,7 +187,7 @@ func (linux *upstartRecord) Status() (string, error) {
 		return "", err
 	}
 
-	if !linux.isInstalled() {
+	if !linux.IsInstalled() {
 		return "Status could not defined", ErrNotInstalled
 	}
 
