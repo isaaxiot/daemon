@@ -127,6 +127,10 @@ func (linux *systemDRecord) Remove() (string, error) {
 		return removeAction + failed, err
 	}
 
+	if err := exec.Command("systemctl", "daemon-reload").Run(); err != nil {
+		return removeAction + failed, err
+	}
+
 	return removeAction + success, nil
 }
 
